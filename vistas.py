@@ -170,7 +170,11 @@ async def eliminar_producto_vista(
     eliminado = await eliminar_producto(conn, producto_id)
 
     if not eliminado:
-        return producto_no_encontrado(request, producto_id)
+        return templates.TemplateResponse(
+            request=request,
+            name="componentes/producto_no_encontrado.html",
+            context={"producto_id": producto_id},
+        )
 
     return templates.TemplateResponse(
         request=request,

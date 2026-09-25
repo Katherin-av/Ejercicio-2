@@ -73,3 +73,15 @@ async def eliminar_producto(conn, producto_id: int) -> bool:
     )
 
     return resultado == "DELETE 1"
+
+
+async def eliminar_producto(conn, producto_id: int) -> bool:
+    resultado = await conn.execute(
+        """
+        DELETE FROM productos
+        WHERE id = $1
+        """,
+        producto_id,
+    )
+
+    return resultado == "DELETE 1"
