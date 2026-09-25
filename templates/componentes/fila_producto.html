@@ -15,6 +15,14 @@
                 hx-swap="outerHTML">
                 Editar
             </button>
+
+            <button
+                hx-delete="/productos/{{ producto.id }}"
+                hx-confirm="¿Seguro que deseas eliminar {{ producto.nombre }}?"
+                hx-target="#producto-{{ producto.id }}"
+                hx-swap="outerHTML">
+                Eliminar
+            </button>
         </td>
     </tr>
 </tbody>

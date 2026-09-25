@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 
 from dependencias import ConnectionDep
-from repositorio import obtener_producto, obtener_productos, actualizar_producto
+from repositorio import obtener_producto, obtener_productos, actualizar_producto, eliminar_producto
 from esquemas import ProductoActualizar
 
 router = APIRouter(tags=["productos"])
@@ -158,4 +158,22 @@ async def guardar_producto_vista(
         request=request,
         name="componentes/fila_actualizada.html",
         context={"producto": producto_actualizado},
+    )
+
+
+@router.delete("/productos/{producto_id}")
+async def eliminar_producto_vista(
+    request: Request,
+    conn: ConnectionDep,
+    producto_id: int
+):
+    eliminado = await eliminar_producto(conn, producto_id)
+
+    if not eliminado:
+        return producto_no_encontrado(request, producto_id)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="componentes/fila_eliminada.html",
+        context={"producto_id": producto_id},
     )
