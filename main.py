@@ -1,29 +1,21 @@
-import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from dotenv import load_dotenv
 
-from database import db
-from vistas import router as vistas_router
-
-load_dotenv()
+from nucleo.configuracion import CONFIGURACION
+from nucleo.conexion import conexion
+from presentacion.rutas.productos import router as productos_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db_url = os.getenv("DATABASE_URL")
-
-    if not db_url:
-        raise RuntimeError("No se encontró DATABASE_URL en el archivo .env")
-
-    await db.connect(db_url)
+    await conexion.conectar(CONFIGURACION.base_datos)
 
     yield
 
-    await db.close()
+    await conexion.cerrar()
 
 
 app = FastAPI(lifespan=lifespan)
 
-app.include_router(vistas_router)
+app.include_router(productos_router)

@@ -4,17 +4,22 @@ from fastapi import APIRouter, Form, Request
 from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 
-from dependencias import ConnectionDep
-from repositorio import obtener_producto, obtener_productos, actualizar_producto, eliminar_producto
-from esquemas import ProductoActualizar
+from nucleo.conexion import ConexionDep
+from dominio.repositorios import (
+    obtener_producto,
+    obtener_productos,
+    actualizar_producto,
+    eliminar_producto,
+)
+from dominio.esquemas import ProductoActualizar
 
 router = APIRouter(tags=["productos"])
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="presentacion/templates")
 
 
 @router.get("/productos")
-async def listar_productos(request: Request, conn: ConnectionDep):
+async def listar_productos(request: Request, conn: ConexionDep):
     productos = await obtener_productos(conn)
     return templates.TemplateResponse(
         request=request,
@@ -26,7 +31,7 @@ async def listar_productos(request: Request, conn: ConnectionDep):
 @router.get("/productos/{producto_id}/editar")
 async def editar_producto_vista(
     request: Request,
-    conn: ConnectionDep,
+    conn: ConexionDep,
     producto_id: int,
 ):
     producto = await obtener_producto(conn, producto_id)
@@ -55,7 +60,7 @@ async def editar_producto_vista(
 @router.get("/productos/{producto_id}/cancelar")
 async def cancelar_edicion_vista(
     request: Request,
-    conn: ConnectionDep,
+    conn: ConexionDep,
     producto_id: int,
 ):
     producto = await obtener_producto(conn, producto_id)
@@ -77,7 +82,7 @@ async def cancelar_edicion_vista(
 @router.post("/productos/{producto_id}")
 async def guardar_producto_vista(
     request: Request,
-    conn: ConnectionDep,
+    conn: ConexionDep,
     producto_id: int,
     nombre: Annotated[str | None, Form()] = None,
     precio: Annotated[str | None, Form()] = None,
@@ -164,8 +169,8 @@ async def guardar_producto_vista(
 @router.delete("/productos/{producto_id}")
 async def eliminar_producto_vista(
     request: Request,
-    conn: ConnectionDep,
-    producto_id: int
+    conn: ConexionDep,
+    producto_id: int,
 ):
     eliminado = await eliminar_producto(conn, producto_id)
 
